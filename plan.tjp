@@ -1,0 +1,79 @@
+#Sample project that runs from 8/10 till 50 days
+project s2016 "Sample 2016" 2016-08-10 +50d {
+
+  timeformat "%a, %m/%d"
+
+  dailyworkinghours 9
+  weekstartsmonday
+  workinghours mon - fri 11:00 - 20:00
+  workinghours sat       14:00 - 20:00
+  workinghours sun       off
+
+  include "header.tji"
+
+  scenario plan "Plan" {
+    scenario actual "Actual"
+    scenario delayed "Delayed"
+  }
+
+  #you should comment this out to make the plan analysis
+  #as of run date. Hard coding current date as 8/20 for demo
+  now 2016-08-20
+
+  trackingscenario actual
+
+}
+
+include "resources.tji"
+
+task main "Releases" {
+
+  start ${projectstart}
+
+  task s02 "S01: 08/27: Augustus Caesar"                              {
+    note "Bug fix and annoyances as focus"
+    priority 850
+    task bfreq "Big Feature: Requirements" { allocate pm effort 1d complete 100}
+    task bfapis "Big Feature: APIs"        { allocate jj depends !bfreq effort 5d complete 90 }
+    task bfui "Big Feature: App and HTML"  { allocate aa depends !bfreq { gapduration 2d} effort 6d note "Assume that 2d after req, some APIs are there to start UI" complete 80 }
+    task jira301 "Fix NPE (JIRA-301)"      { allocate jj effort 1d  complete 100}
+    task s02deploy "Upgrade Release"       { allocate jj effort 0.25d depends !jira301, !bfui, !bfapis complete 0 }
+    maxend 2016-08-27
+  }
+  task s03 "S03: 09/03: Julius Caesar"                              {
+    priority 800
+    note "Support and monitoring systems"
+    task nagios "Nagios setup" {allocate jj effort 3d complete 0}
+    task appcrash "App Crash Analytics setup" {allocate aa effort 4d complete 0}
+    start 2016-08-25
+    maxend 2016-09-03
+  }
+
+  task s01 "S01: 8/20 - Initial Release" {
+    note "Basic stuff to stand it up"
+    priority 900
+    task backend   "Backend APIs"   { allocate jj effort 5d complete 100}
+    task frontend   "App + HTML UI" { allocate aa effort 3d complete 100}
+    complete 100
+    maxend 2016-08-20
+  }
+
+}
+
+# when new things come up, just add to this buckt. Putting these as milestones so
+# that no effort is needed
+task backlog "Backlog: Unplanned" {
+  task abtest "A/B Testing"       { milestone note "Evaluate some tool to provide this"}
+  task oauth "Social login"       { milestone note "Start with facebook and google"}
+}
+
+include "reports.tji"
+include "bookings.tji"
+
+# Export the project as fully scheduled project.
+export "FullProject" {
+  definitions *
+  taskattributes *
+  hideresource 0
+}
+

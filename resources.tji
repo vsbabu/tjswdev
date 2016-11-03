@@ -1,0 +1,20 @@
+include "holidays.tji"
+
+# manage your teams here. See taskjuggler.org for various
+# constraints you can have for people
+resource dev "Engineers" {
+  resource aa "Archie Andrews" {
+    email "archie@somecompany.com"
+    limits { dailymax 6h }
+    leaves annual 2016-08-10
+  }
+  resource jj "Jughead Jones" {
+    email "jughead@somecompany.com"
+    limits { dailymax 8h }
+    leaves annual 2016-08-16 - 2016-08-17
+  }
+}
+resource pm "Product" {
+    email "product@somecompany.com"
+}
+

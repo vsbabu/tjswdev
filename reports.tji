@@ -1,0 +1,172 @@
+
+# Reports
+
+navigator navbar {
+  hidereport @none
+}
+
+macro TaskTip [
+  tooltip istask() -8<-
+    '''Start: ''' <-query attribute='start'->
+    '''End: ''' <-query attribute='end'->
+    ----
+    '''Resources:'''
+
+    <-query attribute='resources'->
+    ----
+    '''Precursors: '''
+
+    <-query attribute='precursors'->
+    ----
+    '''Followers: '''
+
+    <-query attribute='followers'->
+    ->8-
+]
+
+macro cellcol [
+  cellcolor (plan.end < ${now}) & (plan.gauge = "behind schedule") "#FF0000"
+  cellcolor plan.gauge = "behind schedule" "#FFFF99"
+  cellcolor plan.gauge = "ahead of schedule" "#99FF99"
+]
+
+textreport frame "" {
+  header -8<-
+    == <-query attribute='name'-> ==
+    <[navigator id="navbar"]>
+  ->8-
+  footer "----"
+  textreport index "index" {
+    title "Releases"
+    formats html
+    center '<[report id="overview"]>'
+    scenarios delayed
+  }
+
+  textreport "ContactList" {
+    formats html
+    title "People"
+    center '<[report id="contactList"]>'
+  }
+  textreport "ResourceGraph" {
+    formats html
+    title "Allocation"
+    center '<[report id="resourceGraph"]>'
+  }
+  textreport "Backlog" {
+    formats html
+    center '<[report id="backlog"]>'
+  }
+
+}
+
+# A traditional Gantt chart with a project overview.
+taskreport overview "" {
+  header -8<-
+  ->8-
+  columns bsi { title 'WBS' },
+          name {width 500}, start, end { title 'Due' ${cellcol} },  effort {title 'Work'},  resources {title 'People'}, complete,
+          chart { scale day ${TaskTip} }
+  # For this report we like to have the abbreviated weekday in front
+  # of the date. %a is the tag for this.
+  timeformat "%a, %m/%d"
+  taskroot main
+  loadunit days
+  hideresource @all
+  sorttasks tree
+  caption 'All effort values are in man days.'
+}
+
+
+# Macro to set the background color of a cell according to the alert
+# level of the task.
+macro AlertColor [
+  cellcolor plan.alert = 0 "#00D000" # green
+  cellcolor plan.alert = 1 "#D0D000" # yellow
+  cellcolor plan.alert = 2 "#D00000" # red
+]
+
+taskreport status "" {
+  columns bsi { width 50 title 'WBS' }, name { width 150 },
+          start { width 100 }, end { width 100 ${cellcol} },
+          effort { width 100 }, resources {width 100},
+          #alert { tooltip plan.journal != '' "<-query attribute='journal'->" width 150 },
+          status { width 150 }
+  scenarios delayed
+
+  taskreport dashboard "" {
+    headline "Project Dashboard (<-query attribute='now'->)"
+    columns name { title "Task" ${AlertColor} width 200},
+            resources { width 200 ${AlertColor}
+                        listtype bullets
+                        listitem "<-query attribute='name'->"
+                        start ${projectstart} end ${projectend} },
+            alerttrend { title "Trend" ${AlertColor} width 50 },
+            journal { width 350 ${AlertColor} }
+    journalmode status_up
+    journalattributes headline, author, date, summary, details
+    hidetask ~hasalert(0)
+    sorttasks alert.down, delayed.end.up
+    period %{${now} - 1w} +1w
+  }
+  taskreport completed "" {
+    headline "Completed"
+    hidetask ~(delayed.end <= ${now})
+  }
+  taskreport ongoing "" {
+    headline "Ongoing"
+    hidetask ~((delayed.start <= ${now}) & (delayed.end > ${now}))
+  }
+  taskreport future "" {
+    headline "Within 7 days"
+    hidetask (delayed.complete >= 100) | (delayed.end > %{${now} +7d}) # | ~(delayed.start > ${now})
+  }
+}
+
+
+
+# A list of tasks showing the resources assigned to each task.
+taskreport development "" {
+  scenarios delayed
+  headline "Assignments"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 500 }
+  timeformat "%a, %m/%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+}
+
+# A list of all tasks with the percentage completed for each task
+taskreport backlog "" {
+  headline "Backlog"
+  #scenarios delayed
+  #columns bsi { title 'WBS' }, name,  end, note { width 150 }, complete,
+  #        chart { ${TaskTip} scale day width 500}
+  columns name, priority,  note { width 500 }
+  taskroot backlog
+  hideresource @all
+}
+# A list of all employees with their contact details.
+resourcereport contactList "" {
+  scenarios delayed
+  headline "Availability"
+  columns name,
+          email { celltext 1 "[mailto:<-email-> <-email->]" },
+          chart { scale day }
+  hideresource ~isleaf()
+  sortresources name.up
+  hidetask @all
+}
+
+# A graph showing resource allocation. It identifies whether each
+# resource is under- or over-allocated for.
+resourcereport resourceGraph "" {
+  scenarios delayed
+  headline "Allocation"
+  columns no, name, effort, complete, start, end, daily { width 500 ${TaskTip} }
+  loadunit shortauto
+  # We only like to show leaf tasks for leaf resources.
+  hidetask ~(isleaf() & isleaf_())
+  sorttasks plan.start.up
+}
+
