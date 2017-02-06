@@ -5,6 +5,8 @@ It took me some time to read the manual, make reports' template, get this to be 
 Over the course of time, the templates have been reduced a lot to make the daily planning/tracking to be much less time consuming and yet useful for everyone - a typical small team kind of setup.
 Sharing my templates so that it may help you to get started.
 
+[Generated Plan](https://vsbabu.github.io/tjswdev/reports/) is available - check it out!
+
 Strongly suggest you go to www.taskjuggler.org and read intro on this wonderful piece of software.
 
 ## To Get Started
