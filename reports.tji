@@ -25,9 +25,8 @@ macro TaskTip [
 ]
 
 macro cellcol [
-  cellcolor (plan.end < ${now}) & (plan.gauge = "behind schedule") "#FF0000"
-  cellcolor plan.gauge = "behind schedule" "#FFFF99"
-  cellcolor plan.gauge = "ahead of schedule" "#99FF99"
+  cellcolor (istask()) & (isvalid(plan.end)) & (plan.end <${now}) & (plan.complete < 100) "#e0413e"
+  cellcolor (istask()) & (plan.complete = 100) "#4fbe9c"
 ]
 
 textreport frame "" {
@@ -52,6 +51,10 @@ textreport frame "" {
     formats html
     title "Allocation"
     center '<[report id="resourceGraph"]>'
+  }
+  textreport "Completed" {
+    formats html
+    center '<[report id="completed"]>'
   }
   textreport "Backlog" {
     formats html
@@ -137,6 +140,22 @@ taskreport development "" {
 }
 
 # A list of all tasks with the percentage completed for each task
+taskreport completed "" {
+  headline "Completed"
+  #scenarios delayed
+  header -8<-
+  ->8-
+  columns name {width 500}, start, end { title 'End'  },  effort {title 'Work'},  resources {title 'People'}, complete {${cellcol}},
+          chart { scale day ${TaskTip} }
+  # For this report we like to have the abbreviated weekday in front
+  # of the date. %a is the tag for this.
+  timeformat "%a, %m/%d"
+  taskroot completed
+  loadunit days
+  hideresource @all
+  sorttasks tree
+  caption 'All effort values are in man days.'
+}
 taskreport backlog "" {
   headline "Backlog"
   #scenarios delayed
@@ -152,7 +171,7 @@ resourcereport contactList "" {
   headline "Availability"
   columns name,
           email { celltext 1 "[mailto:<-email-> <-email->]" },
-          chart { scale day }
+          chart { scale day width 800 }
   hideresource ~isleaf()
   sortresources name.up
   hidetask @all
@@ -163,10 +182,11 @@ resourcereport contactList "" {
 resourcereport resourceGraph "" {
   scenarios delayed
   headline "Allocation"
-  columns no, name, effort, complete, start, end, daily { width 500 ${TaskTip} }
+  columns no {${cellcol}}, name {${cellcol}}, effort {${cellcol}}, complete {${cellcol}}, start {${cellcol}}, end {${cellcol}}, daily { width 600 ${TaskTip} }
   loadunit shortauto
   # We only like to show leaf tasks for leaf resources.
   hidetask ~(isleaf() & isleaf_())
   sorttasks plan.start.up
+  taskroot main
 }
 

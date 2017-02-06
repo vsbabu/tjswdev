@@ -30,7 +30,7 @@ task main "Releases" {
 
   start ${projectstart}
 
-  task s02 "S01: 08/27: Augustus Caesar"                              {
+  task s02 "S02: 08/27: Augustus Caesar"                              {
     note "Bug fix and annoyances as focus"
     priority 850
     task bfreq "Big Feature: Requirements" { allocate pm effort 1d complete 100}
@@ -48,7 +48,9 @@ task main "Releases" {
     start 2016-08-25
     maxend 2016-09-03
   }
+}
 
+task completed "Completed" {
   task s01 "S01: 8/20 - Initial Release" {
     note "Basic stuff to stand it up"
     priority 900
