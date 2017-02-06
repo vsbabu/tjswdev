@@ -1,0 +1,403 @@
+project s2016 "Sample 2016" "1.0" 2016-08-10-00:00-+0000 - 2016-09-29-00:00-+0000 {
+  timezone "UTC"
+  scenario plan "Plan" {
+    scenario actual "Actual" {
+      active yes
+    }
+    scenario delayed "Delayed" {
+      active yes
+    }
+    active yes
+  }
+}
+
+projectids s2016
+
+resource dev "Engineers" {
+  resource aa "Archie Andrews"
+  resource jj "Jughead Jones"
+}
+resource pm "Product"
+
+task main "Releases" {
+  task s02 "S02: 08/27: Augustus Caesar" {
+    task bfreq "Big Feature: Requirements" {
+      start 2016-08-10-11:00-+0000
+      end 2016-08-10-20:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-08-20-14:00-+0000
+      actual:end 2016-08-22-14:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+    task bfapis "Big Feature: APIs" {
+      depends main.s02.bfreq
+      start 2016-08-18-18:00-+0000
+      end 2016-08-25-17:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-08-26-18:00-+0000
+      actual:end 2016-09-02-17:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+    task bfui "Big Feature: App and HTML" {
+      depends main.s02.bfreq
+      start 2016-08-17-14:00-+0000
+      end 2016-08-27-17:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-08-25-14:00-+0000
+      actual:end 2016-09-05-14:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+    task jira301 "Fix NPE (JIRA-301)" {
+      start 2016-08-25-17:00-+0000
+      end 2016-08-26-18:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-09-02-17:00-+0000
+      actual:end 2016-09-05-12:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+    task s02deploy "Upgrade Release" {
+      depends main.s02.jira301, main.s02.bfui, main.s02.bfapis
+      start 2016-08-27-17:00-+0000
+      end 2016-08-27-19:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-09-05-14:00-+0000
+      actual:end 2016-09-05-16:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+  }
+  task s03 "S03: 09/03: Julius Caesar" {
+    task nagios "Nagios setup" {
+      start 2016-08-26-18:00-+0000
+      end 2016-08-31-17:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-09-05-12:00-+0000
+      actual:end 2016-09-08-17:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+    task appcrash "App Crash Analytics setup" {
+      start 2016-08-27-17:00-+0000
+      end 2016-09-03-17:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-09-05-14:00-+0000
+      actual:end 2016-09-12-14:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+  }
+}
+task completed "Completed" {
+  task s01 "S01: 8/20 - Initial Release" {
+    task backend "Backend APIs" {
+      start 2016-08-10-11:00-+0000
+      end 2016-08-18-18:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-08-20-14:00-+0000
+      actual:end 2016-08-26-18:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+    task frontend "App + HTML UI" {
+      start 2016-08-11-11:00-+0000
+      end 2016-08-17-14:00-+0000
+      scheduling asap
+      scheduled
+      actual:start 2016-08-20-14:00-+0000
+      actual:end 2016-08-25-14:00-+0000
+      actual:scheduling asap
+      delayed:scheduling asap
+    }
+  }
+}
+task backlog "Backlog: Unplanned" {
+  task abtest "A/B Testing" {
+    start 2016-08-10-00:00-+0000
+    milestone
+    scheduled
+    actual:milestone
+    delayed:milestone
+  }
+  task oauth "Social login" {
+    start 2016-08-10-00:00-+0000
+    milestone
+    scheduled
+    actual:milestone
+    delayed:milestone
+  }
+}
+supplement task main {
+  complete 37.0
+  priority 500
+  projectid s2016
+}
+supplement task main.s02 {
+  complete 74.0
+  maxend 2016-08-27-00:00-+0000
+  note "Bug fix and annoyances as focus"
+  priority 850
+  projectid s2016
+}
+supplement task main.s02.bfreq {
+  booking pm 2016-08-10-11:00-+0000 + 9.0h { overtime 2 }
+  actual:booking pm 2016-08-20-14:00-+0000 + 6.0h,
+                 2016-08-22-11:00-+0000 + 3.0h { overtime 2 }
+  delayed:booking pm 2016-08-10-11:00-+0000 + 9.0h { overtime 2 }
+  complete 100
+  priority 850
+  projectid s2016
+}
+supplement task main.s02.bfapis {
+  booking jj 2016-08-18-18:00-+0000 + 1.0h,
+          2016-08-19-11:00-+0000 + 8.0h,
+          2016-08-20-14:00-+0000 + 6.0h,
+          2016-08-22-11:00-+0000 + 8.0h,
+          2016-08-23-11:00-+0000 + 8.0h,
+          2016-08-24-11:00-+0000 + 8.0h,
+          2016-08-25-11:00-+0000 + 6.0h { overtime 2 }
+  actual:booking jj 2016-08-26-18:00-+0000 + 1.0h,
+                 2016-08-27-14:00-+0000 + 6.0h,
+                 2016-08-29-11:00-+0000 + 8.0h,
+                 2016-08-30-11:00-+0000 + 8.0h,
+                 2016-08-31-11:00-+0000 + 8.0h,
+                 2016-09-01-11:00-+0000 + 8.0h,
+                 2016-09-02-11:00-+0000 + 6.0h { overtime 2 }
+  delayed:booking jj 2016-08-18-18:00-+0000 + 1.0h,
+                  2016-08-19-11:00-+0000 + 8.0h,
+                  2016-08-20-14:00-+0000 + 6.0h,
+                  2016-08-22-11:00-+0000 + 8.0h,
+                  2016-08-23-11:00-+0000 + 8.0h,
+                  2016-08-24-11:00-+0000 + 8.0h,
+                  2016-08-25-11:00-+0000 + 6.0h { overtime 2 }
+  complete 90
+  priority 850
+  projectid s2016
+}
+supplement task main.s02.bfui {
+  booking aa 2016-08-17-14:00-+0000 + 3.0h,
+          2016-08-18-11:00-+0000 + 6.0h,
+          2016-08-19-11:00-+0000 + 6.0h,
+          2016-08-20-14:00-+0000 + 6.0h,
+          2016-08-22-11:00-+0000 + 6.0h,
+          2016-08-23-11:00-+0000 + 6.0h,
+          2016-08-24-11:00-+0000 + 6.0h,
+          2016-08-25-11:00-+0000 + 6.0h,
+          2016-08-26-11:00-+0000 + 6.0h,
+          2016-08-27-14:00-+0000 + 3.0h { overtime 2 }
+  actual:booking aa 2016-08-25-14:00-+0000 + 3.0h,
+                 2016-08-26-11:00-+0000 + 6.0h,
+                 2016-08-27-14:00-+0000 + 6.0h,
+                 2016-08-29-11:00-+0000 + 6.0h,
+                 2016-08-30-11:00-+0000 + 6.0h,
+                 2016-08-31-11:00-+0000 + 6.0h,
+                 2016-09-01-11:00-+0000 + 6.0h,
+                 2016-09-02-11:00-+0000 + 6.0h,
+                 2016-09-03-14:00-+0000 + 6.0h,
+                 2016-09-05-11:00-+0000 + 3.0h { overtime 2 }
+  delayed:booking aa 2016-08-17-14:00-+0000 + 3.0h,
+                  2016-08-18-11:00-+0000 + 6.0h,
+                  2016-08-19-11:00-+0000 + 6.0h,
+                  2016-08-20-14:00-+0000 + 6.0h,
+                  2016-08-22-11:00-+0000 + 6.0h,
+                  2016-08-23-11:00-+0000 + 6.0h,
+                  2016-08-24-11:00-+0000 + 6.0h,
+                  2016-08-25-11:00-+0000 + 6.0h,
+                  2016-08-26-11:00-+0000 + 6.0h,
+                  2016-08-27-14:00-+0000 + 3.0h { overtime 2 }
+  complete 80
+  note "Assume that 2d after req, some APIs are there to start UI"
+  priority 850
+  projectid s2016
+}
+supplement task main.s02.jira301 {
+  booking jj 2016-08-25-17:00-+0000 + 2.0h,
+          2016-08-26-11:00-+0000 + 7.0h { overtime 2 }
+  actual:booking jj 2016-09-02-17:00-+0000 + 2.0h,
+                 2016-09-03-14:00-+0000 + 6.0h,
+                 2016-09-05-11:00-+0000 + 1.0h { overtime 2 }
+  delayed:booking jj 2016-08-25-17:00-+0000 + 2.0h,
+                  2016-08-26-11:00-+0000 + 7.0h { overtime 2 }
+  complete 100
+  priority 850
+  projectid s2016
+}
+supplement task main.s02.s02deploy {
+  booking jj 2016-08-27-17:00-+0000 + 2.0h { overtime 2 }
+  actual:booking jj 2016-09-05-14:00-+0000 + 2.0h { overtime 2 }
+  delayed:booking jj 2016-08-27-17:00-+0000 + 2.0h { overtime 2 }
+  complete 0
+  priority 850
+  projectid s2016
+}
+supplement task main.s03 {
+  complete 0.0
+  maxend 2016-09-03-00:00-+0000
+  note "Support and monitoring systems"
+  priority 800
+  projectid s2016
+}
+supplement task main.s03.nagios {
+  booking jj 2016-08-26-18:00-+0000 + 1.0h,
+          2016-08-27-14:00-+0000 + 3.0h,
+          2016-08-27-19:00-+0000 + 1.0h,
+          2016-08-29-11:00-+0000 + 8.0h,
+          2016-08-30-11:00-+0000 + 8.0h,
+          2016-08-31-11:00-+0000 + 6.0h { overtime 2 }
+  actual:booking jj 2016-09-05-12:00-+0000 + 2.0h,
+                 2016-09-05-16:00-+0000 + 3.0h,
+                 2016-09-06-11:00-+0000 + 8.0h,
+                 2016-09-07-11:00-+0000 + 8.0h,
+                 2016-09-08-11:00-+0000 + 6.0h { overtime 2 }
+  delayed:booking jj 2016-08-26-18:00-+0000 + 1.0h,
+                  2016-08-27-14:00-+0000 + 3.0h,
+                  2016-08-27-19:00-+0000 + 1.0h,
+                  2016-08-29-11:00-+0000 + 8.0h,
+                  2016-08-30-11:00-+0000 + 8.0h,
+                  2016-08-31-11:00-+0000 + 6.0h { overtime 2 }
+  complete 0
+  priority 800
+  projectid s2016
+}
+supplement task main.s03.appcrash {
+  booking aa 2016-08-27-17:00-+0000 + 3.0h,
+          2016-08-29-11:00-+0000 + 6.0h,
+          2016-08-30-11:00-+0000 + 6.0h,
+          2016-08-31-11:00-+0000 + 6.0h,
+          2016-09-01-11:00-+0000 + 6.0h,
+          2016-09-02-11:00-+0000 + 6.0h,
+          2016-09-03-14:00-+0000 + 3.0h { overtime 2 }
+  actual:booking aa 2016-09-05-14:00-+0000 + 3.0h,
+                 2016-09-06-11:00-+0000 + 6.0h,
+                 2016-09-07-11:00-+0000 + 6.0h,
+                 2016-09-08-11:00-+0000 + 6.0h,
+                 2016-09-09-11:00-+0000 + 6.0h,
+                 2016-09-10-14:00-+0000 + 6.0h,
+                 2016-09-12-11:00-+0000 + 3.0h { overtime 2 }
+  delayed:booking aa 2016-08-27-17:00-+0000 + 3.0h,
+                  2016-08-29-11:00-+0000 + 6.0h,
+                  2016-08-30-11:00-+0000 + 6.0h,
+                  2016-08-31-11:00-+0000 + 6.0h,
+                  2016-09-01-11:00-+0000 + 6.0h,
+                  2016-09-02-11:00-+0000 + 6.0h,
+                  2016-09-03-14:00-+0000 + 3.0h { overtime 2 }
+  complete 0
+  priority 800
+  projectid s2016
+}
+supplement task completed {
+  complete 100.0
+  priority 500
+  projectid s2016
+}
+supplement task completed.s01 {
+  complete 100
+  maxend 2016-08-20-00:00-+0000
+  note "Basic stuff to stand it up"
+  priority 900
+  projectid s2016
+}
+supplement task completed.s01.backend {
+  booking jj 2016-08-10-11:00-+0000 + 8.0h,
+          2016-08-11-11:00-+0000 + 8.0h,
+          2016-08-12-11:00-+0000 + 8.0h,
+          2016-08-13-14:00-+0000 + 6.0h,
+          2016-08-17-11:00-+0000 + 8.0h,
+          2016-08-18-11:00-+0000 + 7.0h { overtime 2 }
+  actual:booking jj 2016-08-20-14:00-+0000 + 6.0h,
+                 2016-08-22-11:00-+0000 + 8.0h,
+                 2016-08-23-11:00-+0000 + 8.0h,
+                 2016-08-24-11:00-+0000 + 8.0h,
+                 2016-08-25-11:00-+0000 + 8.0h,
+                 2016-08-26-11:00-+0000 + 7.0h { overtime 2 }
+  delayed:booking jj 2016-08-10-11:00-+0000 + 8.0h,
+                  2016-08-11-11:00-+0000 + 8.0h,
+                  2016-08-12-11:00-+0000 + 8.0h,
+                  2016-08-13-14:00-+0000 + 6.0h,
+                  2016-08-17-11:00-+0000 + 8.0h,
+                  2016-08-18-11:00-+0000 + 7.0h { overtime 2 }
+  complete 100
+  priority 900
+  projectid s2016
+}
+supplement task completed.s01.frontend {
+  booking aa 2016-08-11-11:00-+0000 + 6.0h,
+          2016-08-12-11:00-+0000 + 6.0h,
+          2016-08-13-14:00-+0000 + 6.0h,
+          2016-08-16-11:00-+0000 + 6.0h,
+          2016-08-17-11:00-+0000 + 3.0h { overtime 2 }
+  actual:booking aa 2016-08-20-14:00-+0000 + 6.0h,
+                 2016-08-22-11:00-+0000 + 6.0h,
+                 2016-08-23-11:00-+0000 + 6.0h,
+                 2016-08-24-11:00-+0000 + 6.0h,
+                 2016-08-25-11:00-+0000 + 3.0h { overtime 2 }
+  delayed:booking aa 2016-08-11-11:00-+0000 + 6.0h,
+                  2016-08-12-11:00-+0000 + 6.0h,
+                  2016-08-13-14:00-+0000 + 6.0h,
+                  2016-08-16-11:00-+0000 + 6.0h,
+                  2016-08-17-11:00-+0000 + 3.0h { overtime 2 }
+  complete 100
+  priority 900
+  projectid s2016
+}
+supplement task backlog {
+  priority 500
+  projectid s2016
+}
+supplement task backlog.abtest {
+  note "Evaluate some tool to provide this"
+  priority 500
+  projectid s2016
+}
+supplement task backlog.oauth {
+  note "Start with facebook and google"
+  priority 500
+  projectid s2016
+}
+supplement resource dev {
+  workinghours sun off
+               workinghours mon 11:00 - 20:00
+               workinghours tue 11:00 - 20:00
+               workinghours wed 11:00 - 20:00
+               workinghours thu 11:00 - 20:00
+               workinghours fri 11:00 - 20:00
+               workinghours sat 14:00 - 20:00
+}
+supplement resource aa {
+  workinghours sun off
+               workinghours mon 11:00 - 20:00
+               workinghours tue 11:00 - 20:00
+               workinghours wed 11:00 - 20:00
+               workinghours thu 11:00 - 20:00
+               workinghours fri 11:00 - 20:00
+               workinghours sat 14:00 - 20:00
+}
+supplement resource jj {
+  workinghours sun off
+               workinghours mon 11:00 - 20:00
+               workinghours tue 11:00 - 20:00
+               workinghours wed 11:00 - 20:00
+               workinghours thu 11:00 - 20:00
+               workinghours fri 11:00 - 20:00
+               workinghours sat 14:00 - 20:00
+}
+supplement resource pm {
+  workinghours sun off
+               workinghours mon 11:00 - 20:00
+               workinghours tue 11:00 - 20:00
+               workinghours wed 11:00 - 20:00
+               workinghours thu 11:00 - 20:00
+               workinghours fri 11:00 - 20:00
+               workinghours sat 14:00 - 20:00
+}
